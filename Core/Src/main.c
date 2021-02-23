@@ -32,6 +32,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define TS_CAL1    ((uint16_t*)((uint32_t)0x1FFF75A8))
+#define TS_CAL2   ((uint16_t*)((uint32_t)0x1FFF75CA))
+#define VREFINT_CAL		((uint16_t*)((uint32_t)0x1FFF75AA))
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -56,6 +59,53 @@ static void MX_ADC1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static void MX_ADC1_InitVREF(void)
+{
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_VREFINT;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_640CYCLES_5; //640.5 Cycles per sample --> Min sample time is 4us
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+
+}
+
+
+
+
+
+static void MX_ADC1_InitTS(void)
+{
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_640CYCLES_5; //640.5 Cycles per sample --> Min sample time is 5us
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+
+}
+
+float vref;
+float temperature;
+uint32_t data;
 
 /* USER CODE END 0 */
 
@@ -90,6 +140,10 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   int LEDState = 0;
+  HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
+
+  float scaling = 3.3/3.0;
+  float vref_charac = 3.0;
 
   /* USER CODE END 2 */
 
@@ -98,21 +152,52 @@ int main(void)
   while (1)
   {
 
-	  if (HAL_GPIO_ReadPin(b00bs_GPIO_Port, b00bs_Pin) == 0) {
+
+
+	  //LED state machine
+	  if (HAL_GPIO_ReadPin(ButtOn_GPIO_Port, ButtOn_Pin) == 0) {
 		  LEDState = !LEDState;
 
 		  if (LEDState == 0) {
 			  HAL_GPIO_WritePin(LED_GReeN_GPIO_Port, LED_GReeN_Pin, GPIO_PIN_RESET);
+
+			  MX_ADC1_InitVREF();
 		  }
 		  else if (LEDState == 1 ) {
 			  HAL_GPIO_WritePin(LED_GReeN_GPIO_Port, LED_GReeN_Pin, GPIO_PIN_SET);
+
+			  MX_ADC1_InitTS();
 		  }
 
-		  while(HAL_GPIO_ReadPin(b00bs_GPIO_Port, b00bs_Pin) == 0) {
+		  while(HAL_GPIO_ReadPin(ButtOn_GPIO_Port, ButtOn_Pin) == 0) {
 
 		  }
 
 	  }
+
+
+
+	  //Poll the ADC
+	  HAL_ADC_Start(&hadc1);
+	  //HAL_Delay(500);
+	  if (HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK) { //Wait until conversion is complete
+		  data = HAL_ADC_GetValue(&hadc1); //Obtain results of ADC conversion
+	  }
+	  HAL_ADC_Stop(&hadc1);
+
+
+
+	  //Do appropriate calculations based on state of LED
+	  if (LEDState == 0) {
+	 	   //Calculate Vref+
+	 	   vref = vref_charac*(uint32_t)*VREFINT_CAL/(float)data;
+
+	  } else {
+		   //Calculate temperature
+	 	   temperature = 30 + (((float)data*scaling - (uint32_t)*TS_CAL1)*((float)((uint32_t)130 - (uint32_t)30)))/((float)(int32_t)((uint32_t)*TS_CAL2 - (uint32_t)*TS_CAL1));
+	  }
+
+
 
     /* USER CODE END WHILE */
 
@@ -166,7 +251,7 @@ void SystemClock_Config(void)
   PeriphClkInit.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
   PeriphClkInit.PLLSAI1.PLLSAI1Source = RCC_PLLSOURCE_MSI;
   PeriphClkInit.PLLSAI1.PLLSAI1M = 1;
-  PeriphClkInit.PLLSAI1.PLLSAI1N = 30;
+  PeriphClkInit.PLLSAI1.PLLSAI1N = 40;
   PeriphClkInit.PLLSAI1.PLLSAI1P = RCC_PLLP_DIV2;
   PeriphClkInit.PLLSAI1.PLLSAI1Q = RCC_PLLQ_DIV2;
   PeriphClkInit.PLLSAI1.PLLSAI1R = RCC_PLLR_DIV2;
@@ -217,9 +302,9 @@ static void MX_ADC1_Init(void)
   }
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Channel = ADC_CHANNEL_VREFINT;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
@@ -249,11 +334,11 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED_GReeN_GPIO_Port, LED_GReeN_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : b00bs_Pin */
-  GPIO_InitStruct.Pin = b00bs_Pin;
+  /*Configure GPIO pin : ButtOn_Pin */
+  GPIO_InitStruct.Pin = ButtOn_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(b00bs_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(ButtOn_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LED_GReeN_Pin */
   GPIO_InitStruct.Pin = LED_GReeN_Pin;
