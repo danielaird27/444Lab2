@@ -59,6 +59,9 @@ static void MX_ADC1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+
+//ADC Initialization function for changing the channel to VREFINT
 static void MX_ADC1_InitVREF(void)
 {
   ADC_ChannelConfTypeDef sConfig = {0};
@@ -83,6 +86,7 @@ static void MX_ADC1_InitVREF(void)
 
 
 
+//ADC Initialization function for changinng the channel to Temp Sensor
 static void MX_ADC1_InitTS(void)
 {
   ADC_ChannelConfTypeDef sConfig = {0};
@@ -103,9 +107,14 @@ static void MX_ADC1_InitTS(void)
 
 }
 
+
+
+//Global variables watched in realtime with Live Expression viewer
 float vref;
 float temperature;
 uint32_t data;
+
+
 
 /* USER CODE END 0 */
 
@@ -139,11 +148,18 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
+
+
+
+  //Setting up our LED state machine and calibrating the ADC
   int LEDState = 0;
   HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
 
+  //A few parameters found in the datasheet, used for calculations
   float scaling = 3.3/3.0;
   float vref_charac = 3.0;
+
+
 
   /* USER CODE END 2 */
 
@@ -161,11 +177,13 @@ int main(void)
 		  if (LEDState == 0) {
 			  HAL_GPIO_WritePin(LED_GReeN_GPIO_Port, LED_GReeN_Pin, GPIO_PIN_RESET);
 
+			  //No LED light --> read data from VREFINT channel
 			  MX_ADC1_InitVREF();
 		  }
 		  else if (LEDState == 1 ) {
 			  HAL_GPIO_WritePin(LED_GReeN_GPIO_Port, LED_GReeN_Pin, GPIO_PIN_SET);
 
+			  //Yes LED light --> read data from TEMP SENSOR channel
 			  MX_ADC1_InitTS();
 		  }
 
@@ -179,7 +197,6 @@ int main(void)
 
 	  //Poll the ADC
 	  HAL_ADC_Start(&hadc1);
-	  //HAL_Delay(500);
 	  if (HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK) { //Wait until conversion is complete
 		  data = HAL_ADC_GetValue(&hadc1); //Obtain results of ADC conversion
 	  }

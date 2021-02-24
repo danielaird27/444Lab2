@@ -104,7 +104,7 @@ static void MX_ADC1_InitVREF(void)
   sConfig.Rank = ADC_REGULAR_RANK_1;
  8000216:	2306      	movs	r3, #6
  8000218:	607b      	str	r3, [r7, #4]
-  sConfig.SamplingTime = ADC_SAMPLETIME_640CYCLES_5; //640.5 Cycles per sample
+  sConfig.SamplingTime = ADC_SAMPLETIME_640CYCLES_5; //640.5 Cycles per sample --> Min sample time is 4us
  800021a:	2307      	movs	r3, #7
  800021c:	60bb      	str	r3, [r7, #8]
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -167,7 +167,7 @@ static void MX_ADC1_InitTS(void)
   sConfig.Rank = ADC_REGULAR_RANK_1;
  800026a:	2306      	movs	r3, #6
  800026c:	607b      	str	r3, [r7, #4]
-  sConfig.SamplingTime = ADC_SAMPLETIME_640CYCLES_5; //24.5 Cycles per sample
+  sConfig.SamplingTime = ADC_SAMPLETIME_640CYCLES_5; //640.5 Cycles per sample --> Min sample time is 5us
  800026e:	2307      	movs	r3, #7
  8000270:	60bb      	str	r3, [r7, #8]
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -236,6 +236,7 @@ int main(void)
   MX_ADC1_Init();
  80002b6:	f000 f921 	bl	80004fc <MX_ADC1_Init>
   /* USER CODE BEGIN 2 */
+  //Setting up our LED state machine and calibrating the ADC
   int LEDState = 0;
  80002ba:	2300      	movs	r3, #0
  80002bc:	60fb      	str	r3, [r7, #12]
@@ -244,6 +245,7 @@ int main(void)
  80002c0:	4846      	ldr	r0, [pc, #280]	; (80003dc <main+0x138>)
  80002c2:	f001 fd40 	bl	8001d46 <HAL_ADCEx_Calibration_Start>
 
+  //A few parameters found in the datasheet, used for calculations
   float scaling = 3.3/3.0;
  80002c6:	4b46      	ldr	r3, [pc, #280]	; (80003e0 <main+0x13c>)
  80002c8:	60bb      	str	r3, [r7, #8]
@@ -315,7 +317,6 @@ int main(void)
 	  HAL_ADC_Start(&hadc1);
  800032c:	482b      	ldr	r0, [pc, #172]	; (80003dc <main+0x138>)
  800032e:	f000 fe51 	bl	8000fd4 <HAL_ADC_Start>
-	  //HAL_Delay(500);
 	  if (HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK) { //Wait until conversion is complete
  8000332:	f44f 717a 	mov.w	r1, #1000	; 0x3e8
  8000336:	4829      	ldr	r0, [pc, #164]	; (80003dc <main+0x138>)
