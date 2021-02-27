@@ -37,11 +37,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  16 .debug_macro  00029fb7  00000000  00000000  0002e1d0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_line   000080c0  00000000  00000000  00058187  2**0
+ 17 .debug_line   000080c1  00000000  00000000  00058187  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .debug_str    00107b60  00000000  00000000  00060247  2**0
+ 18 .debug_str    00107b60  00000000  00000000  00060248  2**0
                   CONTENTS, READONLY, DEBUGGING
- 19 .comment      0000007b  00000000  00000000  00167da7  2**0
+ 19 .comment      0000007b  00000000  00000000  00167da8  2**0
                   CONTENTS, READONLY
  20 .debug_frame  00002a80  00000000  00000000  00167e24  2**2
                   CONTENTS, READONLY, DEBUGGING
@@ -77,10 +77,10 @@ Disassembly of section .text:
  80001f8:	08003c84 	.word	0x08003c84
 
 080001fc <MX_ADC1_InitVREF>:
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+
+//ADC Initialization function for changing the channel to VREFINT
 static void MX_ADC1_InitVREF(void)
 {
  80001fc:	b580      	push	{r7, lr}
@@ -143,7 +143,7 @@ static void MX_ADC1_InitVREF(void)
 
 
 
-
+//ADC Initialization function for changing the channel to Temp Sensor
 static void MX_ADC1_InitTS(void)
 {
  8000250:	b580      	push	{r7, lr}
@@ -236,6 +236,9 @@ int main(void)
   MX_ADC1_Init();
  80002b6:	f000 f921 	bl	80004fc <MX_ADC1_Init>
   /* USER CODE BEGIN 2 */
+
+
+
   //Setting up our LED state machine and calibrating the ADC
   int LEDState = 0;
  80002ba:	2300      	movs	r3, #0
@@ -283,6 +286,7 @@ int main(void)
  80002f8:	483c      	ldr	r0, [pc, #240]	; (80003ec <main+0x148>)
  80002fa:	f002 f815 	bl	8002328 <HAL_GPIO_WritePin>
 
+			  //No LED light --> read data from VREFINT channel
 			  MX_ADC1_InitVREF();
  80002fe:	f7ff ff7d 	bl	80001fc <MX_ADC1_InitVREF>
  8000302:	e00a      	b.n	800031a <main+0x76>
@@ -297,6 +301,7 @@ int main(void)
  8000310:	4836      	ldr	r0, [pc, #216]	; (80003ec <main+0x148>)
  8000312:	f002 f809 	bl	8002328 <HAL_GPIO_WritePin>
 
+			  //Yes LED light --> read data from TEMP SENSOR channel
 			  MX_ADC1_InitTS();
  8000316:	f7ff ff9b 	bl	8000250 <MX_ADC1_InitTS>
 		  }

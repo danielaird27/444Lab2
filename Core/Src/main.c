@@ -86,7 +86,7 @@ static void MX_ADC1_InitVREF(void)
 
 
 
-//ADC Initialization function for changinng the channel to Temp Sensor
+//ADC Initialization function for changing the channel to Temp Sensor
 static void MX_ADC1_InitTS(void)
 {
   ADC_ChannelConfTypeDef sConfig = {0};

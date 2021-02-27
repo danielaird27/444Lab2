@@ -3741,20 +3741,20 @@ OUTPUT(Lab2.elf elf32-littlearm)
  .debug_macro   0x0000000000029b7b      0x224 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.o
  .debug_macro   0x0000000000029d9f      0x218 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.o
 
-.debug_line     0x0000000000000000     0x80c0
- .debug_line    0x0000000000000000      0x7c4 Core/Src/main.o
- .debug_line    0x00000000000007c4      0x706 Core/Src/stm32l4xx_hal_msp.o
- .debug_line    0x0000000000000eca      0x788 Core/Src/stm32l4xx_it.o
- .debug_line    0x0000000000001652      0x70b Core/Src/system_stm32l4xx.o
- .debug_line    0x0000000000001d5d       0x87 Core/Startup/startup_stm32l4s5vitx.o
- .debug_line    0x0000000000001de4      0x981 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.o
- .debug_line    0x0000000000002765     0x135e Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc.o
- .debug_line    0x0000000000003ac3      0xf90 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc_ex.o
- .debug_line    0x0000000000004a53      0xa09 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.o
- .debug_line    0x000000000000545c      0x8ac Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.o
- .debug_line    0x0000000000005d08      0xafb Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.o
- .debug_line    0x0000000000006803      0xa39 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.o
- .debug_line    0x000000000000723c      0xe84 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.o
+.debug_line     0x0000000000000000     0x80c1
+ .debug_line    0x0000000000000000      0x7c5 Core/Src/main.o
+ .debug_line    0x00000000000007c5      0x706 Core/Src/stm32l4xx_hal_msp.o
+ .debug_line    0x0000000000000ecb      0x788 Core/Src/stm32l4xx_it.o
+ .debug_line    0x0000000000001653      0x70b Core/Src/system_stm32l4xx.o
+ .debug_line    0x0000000000001d5e       0x87 Core/Startup/startup_stm32l4s5vitx.o
+ .debug_line    0x0000000000001de5      0x981 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.o
+ .debug_line    0x0000000000002766     0x135e Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc.o
+ .debug_line    0x0000000000003ac4      0xf90 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_adc_ex.o
+ .debug_line    0x0000000000004a54      0xa09 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.o
+ .debug_line    0x000000000000545d      0x8ac Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.o
+ .debug_line    0x0000000000005d09      0xafb Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.o
+ .debug_line    0x0000000000006804      0xa39 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.o
+ .debug_line    0x000000000000723d      0xe84 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.o
 
 .debug_str      0x0000000000000000   0x107b60
  .debug_str     0x0000000000000000   0x104a8b Core/Src/main.o
